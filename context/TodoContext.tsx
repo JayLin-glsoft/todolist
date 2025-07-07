@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, Dispatch, ReactNode} from 'react';
+import { createContext, useContext, useReducer, useEffect, Dispatch, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { nanoid } from 'nanoid/non-secure';
 
@@ -70,32 +70,13 @@ interface TodoProviderProps {
 }
 
 export function TodoProvider({ children }: TodoProviderProps) {
-  const [todos, dispatch] = useReducer(todosReducer, []);
-
-  useEffect(() => {
-    async function loadTodos() {
-      try {
-        const storedTodos = await AsyncStorage.getItem(TODOS_STORAGE_KEY);
-        if (storedTodos !== null) {
-          dispatch({ type: ACTION_TYPES.SET_TODOS, payload: JSON.parse(storedTodos) });
-        }
-      } catch (e) {
-        console.error('讀取待辦事項失敗', e);
-      }
-    }
-    loadTodos();
-  }, []);
-
-  useEffect(() => {
-    async function saveTodos() {
-      try {
-        await AsyncStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos));
-      } catch (e) {
-        console.error('儲存待辦事項失敗', e);
-      }
-    }
-    saveTodos();
-  }, [todos]);
+  const initTodo: Todo = {
+    id: nanoid(),
+    text: '第一個',
+    isComplete: false,
+    content: '',
+  };
+  const [todos, dispatch] = useReducer(todosReducer, [initTodo]);
 
   return (
     <TodoContext.Provider value={todos}>
